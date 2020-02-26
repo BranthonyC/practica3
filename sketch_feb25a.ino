@@ -1,15 +1,26 @@
+
+/*Motores*/
+// Motor A
+int ENA = 10;
+int IN1 = 9;
+int IN2 = 8;
+// Motor B
+int ENB = 5;
+int IN3 = 7;
+int IN4 = 6;
+
 /*Sensor de distancia*/
 int TRIG =2;
 int ECO=3;
 int DURACION;
 int DISTANCIA;
 
-/*Sensor de colores*/
-#define S0 4
-#define S1 5
-#define S2 6
-#define S3 7
-#define sensorOut 8
+
+#define S0 22
+#define S1 23
+#define S2 24
+#define S3 25
+#define sensorOut 26
 
 int actual_color=0;
 
@@ -38,11 +49,26 @@ void setup() {
   digitalWrite(S0,HIGH);
   digitalWrite(S1,HIGH);  
 
+  //Salidas de los motores Declaramos todos los pines como salidas
+   pinMode (ENA, OUTPUT);
+   pinMode (ENB, OUTPUT);
+   pinMode (IN1, OUTPUT);
+   pinMode (IN2, OUTPUT);
+   pinMode (IN3, OUTPUT);
+   pinMode (IN4, OUTPUT);
+
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
 
+  digitalWrite(TRIG,HIGH);
+  delay(1);
+  digitalWrite(TRIG,LOW);
+  DURACION=pulseIn(ECO,HIGH);
+  DISTANCIA=DURACION/58.2;
+  Serial.println(DISTANCIA);
+  
   switch(actual_color){
     case 1:
       Serial.print("digamos que es color rojo, debo moverme hacia adelante mientras muevo el motor de la barredora");
@@ -56,13 +82,6 @@ void loop() {
     default:
       break;
   }
-  
-  digitalWrite(TRIG,HIGH);
-  delay(1);
-  digitalWrite(TRIG,LOW);
-  DURACION=pulseIn(ECO,HIGH);
-  DISTANCIA=DURACION/58.2;
-  Serial.println(DISTANCIA);
 
   if(DISTANCIA<25){
     if(esquivar){ //Condicion para que alterne el esquivar a la izquierda con esquivar hacia la derecha.
@@ -72,23 +91,13 @@ void loop() {
     }
     esquivar=!esquivar;
   }
+
+  //Esto va fuera 
   delay(200);
   color();
 }
 
-void color()  
-{    
-  /*digitalWrite(S2, LOW);  
-  digitalWrite(S3, LOW);  
-  //count OUT, pRed, RED  
-  red = pulseIn(sensorOut, digitalRead(sensorOut) == HIGH ? LOW : HIGH);  
-  digitalWrite(S3, HIGH);  
-  //count OUT, pBLUE, BLUE  
-  blue = pulseIn(sensorOut, digitalRead(sensorOut) == HIGH ? LOW : HIGH);  
-  digitalWrite(S2, HIGH);  
-  //count OUT, pGreen, GREEN  
-  green = pulseIn(sensorOut, digitalRead(sensorOut) == HIGH ? LOW : HIGH);  */
-   // Setting red filtered photodiodes to be read
+void color(){  // Setting red filtered photodiodes to be read
   digitalWrite(S2,LOW);
   digitalWrite(S3,LOW);
   // Reading the output frequency
@@ -126,4 +135,61 @@ void color()
 
   //Dependiendo de la frecuencia decidiremos asignar un color.
 
+}
+
+
+//Metodo para los motores
+void Adelante (){
+ //Direccion motor A
+ digitalWrite (IN1, HIGH);
+ digitalWrite (IN2, LOW);
+ analogWrite (ENA, 255); //Velocidad motor A
+ //Direccion motor B
+ digitalWrite (IN3, HIGH);
+ digitalWrite (IN4, LOW);
+ analogWrite (ENB, 255); //Velocidad motor B
+}
+
+void Atras (){
+ //Direccion motor A
+ digitalWrite (IN1, LOW);
+ digitalWrite (IN2, HIGH);
+ analogWrite (ENA, 128); //Velocidad motor A
+ //Direccion motor B
+ digitalWrite (IN3, LOW);
+ digitalWrite (IN4, HIGH);
+ analogWrite (ENB, 128); //Velocidad motor B
+}
+
+void Derecha (){
+ //Direccion motor A
+ digitalWrite (IN1, HIGH);
+ digitalWrite (IN2, LOW);
+ analogWrite (ENA, 200); //Velocidad motor A
+ //Direccion motor B
+ digitalWrite (IN3, LOW);
+ digitalWrite (IN4, HIGH);
+ analogWrite (ENB, 100); //Velocidad motor A
+}
+
+void Izquierda (){
+ //Direccion motor A
+ digitalWrite (IN1, LOW);
+ digitalWrite (IN2, HIGH);
+ analogWrite (ENA, 50); //Velocidad motor A
+ //Direccion motor B
+ digitalWrite (IN3, HIGH);
+ digitalWrite (IN4, LOW);
+ analogWrite (ENB, 150); //Velocidad motor A
+}
+
+void Parar (){
+ //Direccion motor A
+ digitalWrite (IN1, LOW);
+ digitalWrite (IN2, LOW);
+ analogWrite (ENA, 0); //Velocidad motor A
+ //Direccion motor B
+ digitalWrite (IN3, LOW);
+ digitalWrite (IN4, LOW);
+ analogWrite (ENB, 0); //Velocidad motor A
 }
